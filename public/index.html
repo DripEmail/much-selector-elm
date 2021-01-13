@@ -32,13 +32,13 @@
 
   <div>
     <h3>Simple Example</h3>
-    <much-select>
+    <much-selector>
       <select slot="select-input">
         <option>Bricks</option>
         <option>Sticks</option>
         <option>Straw</option>
       </select>
-    </much-select>
+    </much-selector>
   </div>
 
   <div>
@@ -243,7 +243,6 @@
     </much-select>
   </div>
 
-
   <div>
     <h3>Change Options With the Dom</h3>
     <button id="change-the-dom">Click me to change the dom</button>
@@ -279,6 +278,28 @@
         <option value="4" data-description="them by changing the dom">Replace</option>
       </select>
     </much-select>
+  </div>
+
+  <div>
+    <h3>Custom Example</h3>
+    <much-selector custom="true">
+      <select>
+        <option>Bricks</option>
+        <option>Sticks</option>
+        <option>Straw</option>
+      </select>
+    </much-selector>
+  </div>
+
+  <div>
+    <h3>Multi Custom Example</h3>
+    <much-selector multi-select="true" custom="true">
+      <select>
+        <option>Bricks</option>
+        <option>Sticks</option>
+        <option>Straw</option>
+      </select>
+    </much-selector>
   </div>
 
 </div>

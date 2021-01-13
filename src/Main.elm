@@ -44,6 +44,7 @@ import Option
         , selectOptionsInOptionsListByString
         , selectSingleOptionInList
         , selectedOptionsToTuple
+        , updateOrAddCustomOption
         )
 import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
@@ -118,6 +119,7 @@ type alias Model =
     , focused : Bool
     , valueCasingWidth : Float
     , valueCasingHeight : Float
+    , custom : Bool
     }
 
 
@@ -173,15 +175,26 @@ update msg model =
             ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options), blurInput () ] )
 
         SearchInputOnInput string ->
+            let
+                options =
+                    if showAddOption model.custom string then
+                        updateOrAddCustomOption string model.options
+
+                    else
+                        model.options
+            in
             case bestMatch string model.options of
                 Just (Option _ _ value _ _) ->
-                    ( { model | searchString = string, options = highlightOptionInListByValue value model.options }, Cmd.none )
+                    ( { model | searchString = string, options = highlightOptionInListByValue value options }, Cmd.none )
+
+                Just (CustomOption _ _ value) ->
+                    ( { model | searchString = string, options = highlightOptionInListByValue value options }, Cmd.none )
 
                 Just (EmptyOption _ _) ->
-                    ( { model | searchString = string }, Cmd.none )
+                    ( { model | searchString = string, options = options }, Cmd.none )
 
                 Nothing ->
-                    ( { model | searchString = string }, Cmd.none )
+                    ( { model | searchString = string, options = options }, Cmd.none )
 
         ValueChanged valuesJson ->
             let
@@ -806,6 +819,11 @@ optionsToValuesHtml options =
 
                             OptionDisabled ->
                                 text ""
+
+                    CustomOption display (OptionLabel _ _) _ ->
+                        case display of
+                            _ ->
+                                text ""
             )
 
 
@@ -838,6 +856,11 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
                 ]
 
 
+showAddOption : Bool -> String -> Bool
+showAddOption addable searchString =
+    addable && searchString /= ""
+
+
 type alias Flags =
     { value : String
     , placeholder : String
@@ -847,6 +870,7 @@ type alias Flags =
     , loading : Bool
     , maxDropdownItems : Int
     , disabled : Bool
+    , custom : Bool
     }
 
 
@@ -935,6 +959,7 @@ init flags =
       -- TODO Should these be passed as flags?
       , valueCasingWidth = 100
       , valueCasingHeight = 45
+      , custom = flags.custom
       }
     , errorCmd
     )

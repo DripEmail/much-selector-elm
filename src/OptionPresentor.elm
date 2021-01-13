@@ -248,7 +248,7 @@ prepareOptionsForPresentation maxDropdownItems searchString options =
                         , descriptionMarkup = text ""
                         }
 
-                    Option.Option _ _ _ _ _ ->
+                    _ ->
                         let
                             searchResult =
                                 search searchString option
